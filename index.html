@@ -8,10 +8,29 @@
 				socket.on('connect', function (msg) {
 					console.log('connect!!!');
 				});
+				var connectToRoomButton = document.getElementById('connectToRoomId');
+				connectToRoomButton.addEventListener('click', function(event) {
+					socket.emit('connectToGame', {
+						key: document.getElementById('keyInputId').value
+					});
+
+				});
+				var sendSignalByLeaderButton = document.getElementById('sendSignalByLeaderId');
+				sendSignalByLeaderButton.addEventListener('click', function(event) {
+					socket.emit('sendSignalByLeader', {
+						key: document.getElementById('keyInputId').value
+					});
+				});
+				socket.on('receiveUpdateByPlayer', function(msg) {
+					alert(msg.payload);
+				});
 			});
+
 		</script>
 	</head>
 	<body>
-		hello
+		<input id='connectToRoomId' type='button' value='connectToRoom' />
+		<input id='sendSignalByLeaderId' type='button' value='sendSignalByLeader' />
+		<input id='keyInputId' type='text' value="key123" />
 	</body>
 </html>
