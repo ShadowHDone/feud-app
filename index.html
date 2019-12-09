@@ -10,10 +10,9 @@
 				});
 				var connectToRoomButton = document.getElementById('connectToRoomId');
 				connectToRoomButton.addEventListener('click', function(event) {
-					socket.emit('connectToGame', {
+					socket.emit('connectToGameByPlayer', {
 						key: document.getElementById('keyInputId').value
 					});
-
 				});
 				var sendSignalByLeaderButton = document.getElementById('sendSignalByLeaderId');
 				sendSignalByLeaderButton.addEventListener('click', function(event) {

@@ -12,15 +12,26 @@ http.listen(3000, () => {
 });
 
 io.on('connection', socket => {
-    socket.on('connectToGame', (msg) => {
-        socket.join(msg.key);
-        console.log('connectToGame');
+    socket.on('connectToGameByLeader', msg => {
+        //create game
     });
-    socket.on('sendSignalByLeader', (msg) => {
-        io.to(msg.key).emit('receiveUpdateByPlayer', {
-            payload: 'update is received'
-        });
-        console.log('sendSignalByLeader');
+    socket.on('connectToGameByPlayer', msg => {
+        if (msg.hasOwnProperty('key')) {
+            socket.join(msg.key);
+        } else {
+            console.log('Key is not defined');
+        }
+        console.log('connectToGame event');
+    });
+    socket.on('sendSignalByLeader', msg => {
+        if (msg.hasOwnProperty('key')) {
+            io.to(msg.key).emit('receiveUpdateByPlayer', {
+                payload: 'update is received'
+            });
+        } else {
+            console.log('Key is not defined');
+        }
+        console.log('sendSignalByLeader event');
     });
     socket.on('disconnect', () => {
         console.log('disconnect');
