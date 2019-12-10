@@ -1,6 +1,6 @@
 # feud-app
 This module of Feud project is used for signal flow control from leader to other players, which may be browser tabs, TV-monitors, mobile devices etc.
-Leader and players related by connectivity 'one-to-many'. Details are below described.
+Leader and players related by connectivity 'one-to-many'. Details are described below.
 
 ## Specifications for Feud Websocket API:
 
@@ -103,7 +103,7 @@ socket.emit('connectToGameByLeader', {
 ```
 Result is emitting of 'receiveUpdateByPlayer' event in this application.
 
-5. Last step us imlementing of 'sendSignalByLeader' emitter, that updates state of game on server and sends broadcast request to other players and to itself.
+5. Last step is imlementing of 'sendSignalByLeader' emitter, that updates state of game on server and sends broadcast request to other players and to itself.
 
 Example of implementation of opening one answer indexed by questionIndex and answerIndex:
 ```

@@ -3,6 +3,8 @@ var app = exp();
 const client = require('http');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+var fs = require('fs');
+var options = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 let rooms = {};
 
@@ -49,7 +51,7 @@ function connectToGameByPlayerCallback(msg, socket) {
 function connectToGameByLeaderCallback(msg, socket) {
     if (msg.hasOwnProperty('key')) {
         socket.join(msg.key);
-        callGameByKeyAndSaveToRooms(msg.key, socket);
+        callGameByKeyAndSaveToRooms(msg, socket);
     } else {
         console.error('Key is not defined');
     }
@@ -72,13 +74,11 @@ function sendSignalByLeaderCallback(msg) {
     console.log('sendSignalByLeader event');
 }
 
-function callGameByKeyAndSaveToRooms(key, socket) {
-    const req = client.request({
-        hostname: 'localhost',
-        port: 8080,
-        path: '/api/v1/game/key/' + key,
-        merhod: 'GET'
-    }, res => {
+function callGameByKeyAndSaveToRooms(msg, socket) {
+    let optionsCopy = JSON.parse(JSON.stringify(options));
+    optionsCopy.path = "/api/v1/game/key/" + msg.key;
+    optionsCopy.method = "GET";
+    const req = client.request(optionsCopy, res => {
         res.on('data', data => {
             let game = JSON.parse(String.fromCharCode.apply(String, data)).game;
             for (let q of game.questions) {
@@ -87,7 +87,7 @@ function callGameByKeyAndSaveToRooms(key, socket) {
                     a.clicked = false;
                 }
             }
-            rooms[key] = game;
+            rooms[msg.key] = game;
             socket.emit('receiveUpdateByPlayer', {
                 payload: rooms[msg.key]
             });
