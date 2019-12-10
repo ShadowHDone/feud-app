@@ -49,7 +49,7 @@ function connectToGameByPlayerCallback(msg, socket) {
 function connectToGameByLeaderCallback(msg, socket) {
     if (msg.hasOwnProperty('key')) {
         socket.join(msg.key);
-        callGameByKeyAndSaveToRooms(msg.key);
+        callGameByKeyAndSaveToRooms(msg.key, socket);
     } else {
         console.error('Key is not defined');
     }
@@ -72,7 +72,7 @@ function sendSignalByLeaderCallback(msg) {
     console.log('sendSignalByLeader event');
 }
 
-function callGameByKeyAndSaveToRooms(key) {
+function callGameByKeyAndSaveToRooms(key, socket) {
     const req = client.request({
         hostname: 'localhost',
         port: 8080,
@@ -88,6 +88,9 @@ function callGameByKeyAndSaveToRooms(key) {
                 }
             }
             rooms[key] = game;
+            socket.emit('receiveUpdateByPlayer', {
+                payload: rooms[msg.key]
+            });
         });
     });
     req.on('error', error => {
