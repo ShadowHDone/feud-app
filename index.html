@@ -17,19 +17,32 @@
 				var sendSignalByLeaderButton = document.getElementById('sendSignalByLeaderId');
 				sendSignalByLeaderButton.addEventListener('click', function(event) {
 					socket.emit('sendSignalByLeader', {
+						key: document.getElementById('keyInputId').value,
+						eventType: 'openAnswer',
+						eventData: {
+							questionIndex: 0,
+							answerIndex: 0
+						}
+					});
+				});
+				var connectToRoomByLeaderButton = document.getElementById('connectToRoomByLeaderId');
+				connectToRoomByLeaderButton.addEventListener('click', function(event) {
+					socket.emit('connectToGameByLeader', {
 						key: document.getElementById('keyInputId').value
 					});
 				});
 				socket.on('receiveUpdateByPlayer', function(msg) {
-					alert(msg.payload);
+					alert(JSON.stringify(msg.payload));
 				});
+				
 			});
 
 		</script>
 	</head>
 	<body>
 		<input id='connectToRoomId' type='button' value='connectToRoom' />
+		<input id='connectToRoomByLeaderId' type="button" value="connectToRoomByLeader" />
 		<input id='sendSignalByLeaderId' type='button' value='sendSignalByLeader' />
-		<input id='keyInputId' type='text' value="key123" />
+		<input id='keyInputId' type='text' value="bd93ba53-2c5c-463e-b74a-d1eee8b55c2c" />
 	</body>
 </html>
