@@ -16,42 +16,61 @@ http.listen(3000, () => {
 
 io.on('connection', socket => {
     socket.on('connectToGameByLeader', msg => {
-        if (msg.hasOwnProperty('key')) {
-            socket.join(msg.key);
-            callGameByKeyAndSaveToRooms(msg.key);
-        } else {
-            console.error('Key is not defined');
-        }
+        connectToGameByLeaderCallback(msg, socket);
     });
     socket.on('sendSignalByLeader', msg => {
-        if (msg.hasOwnProperty('key') && msg.hasOwnProperty('eventType') && msg.hasOwnProperty('eventData')) {
-            if (msg.eventType === 'openQuestion' && msg.eventData.hasOwnProperty('questionIndex')) {
-                rooms[msg.key].questions[msg.eventData.questionIndex].clicked = true;
-            }
-            if (msg.eventType === 'openAnswer' && msg.eventData.hasOwnProperty('questionIndex') && msg.eventData.hasOwnProperty('answerIndex')) {
-                rooms[msg.key].questions[msg.eventData.questionIndex].answers[msg.eventData.answerIndex].clicked = true;
-            }
-            io.to(msg.key).emit('receiveUpdateByPlayer', {
-                payload: rooms[msg.key]
-            });
-        } else {
-            console.error('Key, eventType or parameterValue is not defined');
-        }
-        console.log('sendSignalByLeader event');
+        sendSignalByLeaderCallback(msg);
     });
     socket.on('connectToGameByPlayer', msg => {
-        if (msg.hasOwnProperty('key')) {
-            socket.join(msg.key);
-        } else {
-            console.error('Key is not defined');
-        }
-        console.log('connectToGame event');
+        connectToGameByPlayerCallback(msg, socket);
     });
-    socket.on('disconnect', () => {
-        console.log('disconnect');
+    socket.on('disconnect', msg => {
+        disconnectCallback(msg);
     });
-    console.log('connection');
+    console.log('connection event');
 });
+
+function disconnectCallback() {
+    console.log('disconnect');
+}
+
+function connectToGameByPlayerCallback(msg, socket) {
+    if (msg.hasOwnProperty('key')) {
+        socket.join(msg.key);
+        socket.emit('receiveUpdateByPlayer', {
+            payload: rooms[msg.key]
+        });
+    } else {
+        console.error('Key is not defined');
+    }
+    console.log('connectToGame event');
+}
+
+function connectToGameByLeaderCallback(msg, socket) {
+    if (msg.hasOwnProperty('key')) {
+        socket.join(msg.key);
+        callGameByKeyAndSaveToRooms(msg.key);
+    } else {
+        console.error('Key is not defined');
+    }
+}
+
+function sendSignalByLeaderCallback(msg) {
+    if (msg.hasOwnProperty('key') && msg.hasOwnProperty('eventType') && msg.hasOwnProperty('eventData')) {
+        if (msg.eventType === 'openQuestion' && msg.eventData.hasOwnProperty('questionIndex')) {
+            rooms[msg.key].questions[msg.eventData.questionIndex].clicked = true;
+        }
+        if (msg.eventType === 'openAnswer' && msg.eventData.hasOwnProperty('questionIndex') && msg.eventData.hasOwnProperty('answerIndex')) {
+            rooms[msg.key].questions[msg.eventData.questionIndex].answers[msg.eventData.answerIndex].clicked = true;
+        }
+        io.to(msg.key).emit('receiveUpdateByPlayer', {
+            payload: rooms[msg.key]
+        });
+    } else {
+        console.error('Some json fieilds is not defined');
+    }
+    console.log('sendSignalByLeader event');
+}
 
 function callGameByKeyAndSaveToRooms(key) {
     const req = client.request({
