@@ -129,6 +129,8 @@ socket.emit('sendSignalByLeader', {
 ```
 Result of this action is updating state of game on server and broadcast sending to all participants of game. In other words, emitting 'receiveUpdateByPlayer' event for entire room.
 
+Sequence diagram of interaction process: https://www.draw.io/?lightbox=1&target=blank&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Untitled%20Diagram.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1f4KlQ5-djPnmhTUvgrrdxZzF_D95DkpZ%26export%3Ddownload
+
 
 
 
