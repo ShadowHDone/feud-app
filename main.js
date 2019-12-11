@@ -17,22 +17,30 @@ http.listen(3000, () => {
 });
 
 io.on('connection', socket => {
+    let key = undefined;
     socket.on('connectToGameByLeader', msg => {
+        key = msg.key;
         connectToGameByLeaderCallback(msg, socket);
     });
     socket.on('sendSignalByLeader', msg => {
+        key = msg.key;
         sendSignalByLeaderCallback(msg);
     });
     socket.on('connectToGameByPlayer', msg => {
+        key = msg.key;
         connectToGameByPlayerCallback(msg, socket);
     });
-    socket.on('disconnect', msg => {
-        disconnectCallback(msg);
+    socket.on('disconnect', () => {
+        disconnectCallback(key, socket);
     });
     console.log('connection event');
 });
 
-function disconnectCallback() {
+function disconnectCallback(key, socket) {
+    if (key !== undefined) {
+        socket.leave(key);
+        delete rooms[key];
+    }
     console.log('disconnect');
 }
 
