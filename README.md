@@ -1,6 +1,6 @@
 # feud-app
 This module of Feud project is used for signal flow control from leader to other players, which may be browser tabs, TV-monitors, mobile devices etc.
-Leader and players related by connectivity 'one-to-many'. Details are described below.
+Leader and players is related by connectivity 'one-to-many'. Details are described below.
 
 ## Specifications for Feud Websocket API:
 
@@ -30,8 +30,8 @@ Structure of msg:
 ```
 {
    "payload": {
-      "id": null,
-      "key": null,
+      "id": 1,
+      "key": 'LOLOLO',
       "description": "desc",
       "questions": [
          {
@@ -67,7 +67,7 @@ socket.on('receiveUpdateByPlayer', function(msg) {
 
 ```
 socket.emit('connectToGameByPlayer', {
-	key: 'c21da5a9-754c-4af0-ab4c-fa6a3417088d'
+	key: 'LOLOLO'
 });
 ```              
 Result of this action is emitting 'receiveUpdateByPlayer' event on this client application of player.
@@ -94,11 +94,11 @@ socket.on('connect', function (msg) {
 
 3. Also you need to implement 'receiveUpdateByPlayer' callback', that works same as described upper.
 
-4. Also you need to implement 'connectToGameByLeader' emitter to connect to game by key:
+4. Also you need to implement 'connectToGameByLeader' emitter to connect to game by id (use can get id from feud-admin application):
 
 ```
 socket.emit('connectToGameByLeader', {
-	key: 'c21da5a9-754c-4af0-ab4c-fa6a3417088d'
+	id: 1
 });
 ```
 Result is emitting of 'receiveUpdateByPlayer' event in this application.
@@ -108,7 +108,7 @@ Result is emitting of 'receiveUpdateByPlayer' event in this application.
 Example of implementation of opening one answer indexed by questionIndex and answerIndex:
 ```
 socket.emit('sendSignalByLeader', {
-	key: 'c21da5a9-754c-4af0-ab4c-fa6a3417088d',
+	key: 'LOLOLO',
 	eventType: 'openAnswer',
 	eventData: {
 		questionIndex: 0,
@@ -120,7 +120,7 @@ socket.emit('sendSignalByLeader', {
 Example of implementation of opening one question indexed by questionIndex only:
 ```
 socket.emit('sendSignalByLeader', {
-	key: 'c21da5a9-754c-4af0-ab4c-fa6a3417088d',
+	key: 'LOLOLO',
 	eventType: 'openQuestion',
 	eventData: {
 		questionIndex: 0
@@ -142,7 +142,7 @@ Structure of msg:
 }
 ```
 
-Sequence diagram of interaction process: https://www.draw.io/?lightbox=1&target=blank&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Untitled%20Diagram.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1f4KlQ5-djPnmhTUvgrrdxZzF_D95DkpZ%26export%3Ddownload
+Sequence diagram of interaction process: https://drive.google.com/open?id=1uVTBjUkszRlBra3WKLGSEStv9IWhYimu
 
 
 
