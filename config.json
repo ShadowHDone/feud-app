@@ -1,4 +1,8 @@
 {
-    "hostname": "shadowhd.ru",
-    "port": 9123
+    "host": "100.4na.su",
+    "getGameByIdURL": "/api/api/v1/game/",
+    "port": 80,
+    "application": {
+        "port": 3000
+    }
 }

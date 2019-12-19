@@ -28,7 +28,7 @@
 				var connectToRoomByLeaderButton = document.getElementById('connectToRoomByLeaderId');
 				connectToRoomByLeaderButton.addEventListener('click', function(event) {
 					socket.emit('connectToGameByLeader', {
-						key: document.getElementById('keyInputId').value
+						id: document.getElementById('keyInputId').value
 					});
 				});
 				socket.on('receiveUpdateByPlayer', function(msg) {
@@ -43,6 +43,6 @@
 		<input id='connectToRoomId' type='button' value='connectToRoom' />
 		<input id='connectToRoomByLeaderId' type="button" value="connectToRoomByLeader" />
 		<input id='sendSignalByLeaderId' type='button' value='sendSignalByLeader' />
-		<input id='keyInputId' type='text' value="c21da5a9-754c-4af0-ab4c-fa6a3417088d" />
+		<input id='keyInputId' type='text' value="1" />
 	</body>
 </html>

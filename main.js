@@ -4,6 +4,7 @@ const client = require('http');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
+const shortid = require('shortid');
 var options = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 let rooms = {};
@@ -12,21 +13,27 @@ app.get('/', (req, res) => {
     res.sendFile('index.html', { root: __dirname });
 });
 
-http.listen(3000, () => {
-    console.log('listening on *:3000');
+http.listen(options.application.port, () => {
+    console.log('listening on *:' + options.application.port);
 });
 
 io.on('connection', socket => {
     let key = undefined;
     let isLeader = false;
     socket.on('connectToGameByLeader', msg => {
-        key = msg.key;
         isLeader = true;
-        connectToGameByLeaderCallback(msg, socket);
+        connectToGameByLeaderCallback(msg.id, socket).then(game => {
+            rooms[game.key] = game;
+            key = game.key;
+            socket.emit('receiveUpdateByPlayer', {
+                payload: rooms[game.key]
+            });
+        }, error => {
+            handleError(error, socket);
+        });
     });
     socket.on('sendSignalByLeader', msg => {
         if (isLeader) {
-            key = msg.key;
             sendSignalByLeaderCallback(msg, socket);
         } else {
             handleError('Socket it not leader', socket);
@@ -65,29 +72,24 @@ function connectToGameByPlayerCallback(msg, socket) {
     console.log('connectToGame event');
 }
 
-function connectToGameByLeaderCallback(msg, socket) {
-    if (msg.hasOwnProperty('key')) {
-        socket.join(msg.key);
-        getGameByKey(msg.key).then(game => {
+function connectToGameByLeaderCallback(id, socket) {
+    return new Promise((resolve, reject) => {
+        let gameKey = shortid.generate();
+        socket.join(gameKey);
+        getGameById(id).then(game => {
+            game.key = gameKey;
             for (let q of game.questions) {
                 q.clicked = false;
                 for (let a of q.answers) {
                     a.clicked = false;
                 }
             }
-            rooms[msg.key] = game;
-            socket.emit('receiveUpdateByPlayer', {
-                payload: rooms[msg.key]
-            });
+            resolve(game);
         }, errorMessage => {
-            console.log(errorMessage);
-            handleError(errorMessage, socket);
+            reject(errorMessage);
         });
-    } else {
-        console.error('Key is not defined');
-        handleError('Key is not defined', socket);
-    }
-    console.log('connectToGameByLeader event');
+        console.log('connectToGameByLeader event');
+    })
 }
 
 function handleError(message, socket) {
@@ -119,12 +121,15 @@ function sendSignalByLeaderCallback(msg, socket) {
     console.log('sendSignalByLeader event');
 }
 
-function getGameByKey(key) {
+function getGameById(id) {
     return new Promise((resolve, reject) => {
-        let optionsCopy = JSON.parse(JSON.stringify(options));
-        optionsCopy.path = "/api/v1/game/key/" + key;
-        optionsCopy.method = "GET";
-        const req = client.request(optionsCopy, res => {
+        let httpOps = {
+            hostname: options.host,
+            path: options.getGameByIdURL + id,
+            port: options.port,
+            method: 'GET'
+        }
+        const req = client.request(httpOps, res => {
             if (res.statusCode === 200) {
                 res.on('data', data => {
                     try {
