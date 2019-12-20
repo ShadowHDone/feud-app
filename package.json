@@ -4,7 +4,6 @@
   "description": "Application for signal manipulation",
   "main": "main.js",
   "scripts": {
-    //run
     "start": "node main.js"
   },
   "repository": {
